@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { parse } = require('path');
 const path = require('path');
 const rootDir = require('../util/path');
 
@@ -25,9 +26,27 @@ module.exports = class Cart {
                 }
                 cart.totalPrice = cart.totalPrice + productPrice;
                 fs.writeFile(p, JSON.stringify(cart), err => {
-                    console.log(err);
+                    if (err) {
+                        console.log(err);
+                    }
                 })
             });
             cart.products = [...cart.products];
+    }
+
+    static deleteProduct(id, productPrice) {
+        fs.readFile(p, (err, fileContent) => {
+            if (err) {
+                return;
+            }
+            const updatedCart = { ...JSON.parse(fileContent) };
+            console.log("11111112" + JSON.stringify(updatedCart));
+            const product = updatedCart.products.find(prod => prod.id === id);
+            const productQty = product.qty;
+            updatedCart.products = updatedCart.products.filter(prod => prod.id !== id);
+            console.log("11111113" + updatedCart.totalPrice + "!!!" + productPrice + "%%%" + productQty + "***" +  (updatedCart.totalPrice - productPrice * productQty));
+            updatedCart.totalPrice = updatedCart.totalPrice - productPrice * productQty;
+            console.log("11111114" + JSON.stringify(updatedCart));
+        });
     }
 }
